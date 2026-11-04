@@ -1,0 +1,17 @@
+groups:
+  - name: application
+    rules:
+      - alert: SportLineNoRequests
+        expr: sum(increase(sportline_http_requests_total{group="application"}[1m])) < 1
+        for: 10s
+        labels: {severity: warning, source: application}
+        annotations:
+          summary: "В SportLine не поступают запросы"
+  - name: computer
+    rules:
+      - alert: HighWindowsCpu
+        expr: windows_cpu_usage_percent{group="computer"} > 80
+        for: 10s
+        labels: {severity: warning, source: computer}
+        annotations:
+          summary: "Загрузка процессора Windows выше 80%"

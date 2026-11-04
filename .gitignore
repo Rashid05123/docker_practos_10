@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+~$*.docx
+rendered/
+rendered2/
+скрины/
+webhook_events.jsonl
+Практическая_работа_10.docx
+make_report_10.py
