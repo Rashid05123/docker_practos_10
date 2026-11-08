@@ -1,23 +1,32 @@
 global:
   resolve_timeout: 10s
 route:
-  receiver: primary-webhook
-  group_by: [alertname, source]
+  receiver: reserve-webhook
+  group_by: [group, alertname]
   group_wait: 2s
   group_interval: 10s
   repeat_interval: 1m
   routes:
-    - receiver: primary-webhook
-      matchers: ['source="computer"']
+    # у приложения и компьютера свои основные точки, данные не смешиваются
+    - receiver: application-webhook
+      matchers: ['group="application"']
       continue: true
     - receiver: computer-webhook
-      matchers: ['source="computer"']
+      matchers: ['group="computer"']
+      continue: true
+    # дополнительная точка получает копию каждого события
+    - receiver: reserve-webhook
+      matchers: ['group=~"application|computer"']
 receivers:
-  - name: primary-webhook
+  - name: application-webhook
     webhook_configs:
-      - url: http://host.docker.internal:9184/primary
+      - url: http://host.docker.internal:9184/application
         send_resolved: true
   - name: computer-webhook
     webhook_configs:
       - url: http://host.docker.internal:9184/computer
+        send_resolved: true
+  - name: reserve-webhook
+    webhook_configs:
+      - url: http://host.docker.internal:9185/reserve
         send_resolved: true

@@ -1,17 +1,24 @@
 groups:
   - name: application
     rules:
+      # счетчик запросов сам только растет, поэтому берем его прирост за минуту
       - alert: SportLineNoRequests
         expr: sum(increase(sportline_http_requests_total{group="application"}[1m])) < 1
         for: 10s
-        labels: {severity: warning, source: application}
+        labels:
+          severity: warning
+          group: application
         annotations:
           summary: "В SportLine не поступают запросы"
+          description: "Запросов за минуту: {{ $value | printf \"%.0f\" }}"
   - name: computer
     rules:
       - alert: HighWindowsCpu
         expr: windows_cpu_usage_percent{group="computer"} > 80
         for: 10s
-        labels: {severity: warning, source: computer}
+        labels:
+          severity: warning
+          group: computer
         annotations:
           summary: "Загрузка процессора Windows выше 80%"
+          description: "Загрузка процессора: {{ $value | printf \"%.0f\" }}%"
